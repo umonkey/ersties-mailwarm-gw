@@ -3,6 +3,7 @@
 
 import os
 import smtplib
+import sys
 
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
@@ -12,7 +13,7 @@ SERVER = ('127.0.0.1', 1025)
 
 FROM = 'alice@example.com'
 
-TO = 'hex@umonkey.net'
+TO = sys.argv[1] if len(sys.argv) > 1 else 'bob@example.com'
 
 text = "You're next."
 
