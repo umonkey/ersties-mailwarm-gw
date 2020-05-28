@@ -4,6 +4,7 @@
 import asyncore
 import base64
 import os
+import re
 from smtpd import SMTPServer
 import mailparser
 from xml.sax.saxutils import escape
@@ -29,8 +30,11 @@ class Bridge(SMTPServer):
         :return: Nothing.
         :rtype: None
         """
-        mail = mailparser.parse_from_bytes(body)
-        self.forward(mail)
+        try:
+            mail = mailparser.parse_from_bytes(body)
+            self.forward(mail)
+        except Exception as e:
+            return '554 Transaction failed: %s' % e
 
     def forward(self, mail):
         """
@@ -48,6 +52,18 @@ class Bridge(SMTPServer):
         })
 
         print('Response: %d: %s' % (response.status_code, response.text))
+
+        if response.status_code >= 200 and response.status_code < 300:
+            return
+
+        raise RuntimeError(self.get_error_message(response.text))
+
+    def get_error_message(self, xml):
+        m = re.search(r'<Message>(.+?)</Message>', xml)
+        if m is not None:
+            return m.group(1)
+        else:
+            return 'unknown error'
 
 
 class XML(object):
