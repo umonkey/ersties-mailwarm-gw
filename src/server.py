@@ -139,6 +139,8 @@ class XML(object):
                 xml += '<Content>%s</Content>' % base64.b64encode(att['payload'].encode()).decode('utf-8')
                 xml += '</Attachment>'
 
+            xml = '<Attachments>%s</Attachments>' % xml
+
         return xml
 
 
