@@ -127,5 +127,7 @@ class XML(object):
 
 
 bridge = Bridge(('0.0.0.0', 1025), None)
-print('Waiting for messages on *:1025, using api key %s' % API_KEY)
+print('Waiting for messages on *:1025')
+print('EXPERTSENDER_API_KEY = %s' % API_KEY)
+print('EXPERTSENDER_API_URL = %s' % API_URL)
 asyncore.loop()
