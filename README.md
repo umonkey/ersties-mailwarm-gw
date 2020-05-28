@@ -27,3 +27,25 @@ $ docker run --rm -p 1025:1025/tcp --name mailwarm-bridge --env-file /etc/erstie
 ```
 $ docker composer up
 ```
+
+
+## Testing
+
+Success:
+
+```
+$ python3 src/test.py hex@umonkey.net
+Message sent.
+```
+
+Invalid email address:
+
+```
+$ python3 src/test.py foobar@com
+Traceback (most recent call last):
+  File "src/test.py", line 37, in <module>
+    s.sendmail(FROM, TO, msg.as_string().encode('utf-8'))
+  File "/usr/lib/python3.8/smtplib.py", line 892, in sendmail
+    raise SMTPDataError(code, resp)
+smtplib.SMTPDataError: (554, b'Transaction failed: foobar@com: Subscriber email is invalid.')
+```
