@@ -10,22 +10,39 @@ Environment variables:
 - `EXPERTSENDER_API_KEY` -- secret key.
 - `EXPERTSENDER_API_URL` -- URL to post to.
 
-
-## Running
-
-(1) With docker run:
+Store in `/etc/ersties/mailwarm-bridge.env`:
 
 ```
 $ cat /etc/ersties/mailwarm-bridge.env
-EXPERTSENDER_API_KEY=123456
+EXPERTSENDER_API_KEY=foobar
 EXPERTSENDER_API_URL=https://api3.esv2.com/v2/Api/SystemTransactionals/6
+```
+
+## Running
+
+(0) Prepare the image:
+
+```
+$ git clone https://github.com/umonkey/ersties-mailwarm-gw
+$ cd ersties-mailwarm-gw
+$ docker build --tag mailwarm-bridge:v1 .
+```
+
+(1) Run with docker run:
+
+```
 $ docker run --rm -p 1025:1025/tcp --name mailwarm-bridge --env-file /etc/ersties/mailwarm-bridge.env mailwarm-bridge:v1
+...
+Waiting for messages on *:1025
 ```
 
-(2) With docker composer:
+(2) Or, run with docker composer:
 
 ```
-$ docker composer up
+$ docker compose up
+Recreating ersties-mailwarm-gw_bridge_1 ... done
+Attaching to ersties-mailwarm-gw_bridge_1
+bridge_1  | Waiting for messages on *:1025
 ```
 
 
