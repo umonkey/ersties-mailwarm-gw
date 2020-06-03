@@ -3,17 +3,22 @@
 
 import asyncore
 import base64
+import json
 import os
 import re
+import sys
 from smtpd import SMTPServer
 import mailparser
 from xml.sax.saxutils import escape
 import requests
+import tempfile
 
 
-API_KEY = os.getenv('EXPERTSENDER_API_KEY', 'foobar')
+API_KEY = os.getenv('EXPERTSENDER_API_KEY')
 
 API_URL = os.getenv('EXPERTSENDER_API_URL', 'https://api3.esv2.com/v2/Api/SystemTransactionals/6')
+
+DUMP_FOLDER = os.getenv('EXPERTSENDER_DUMP_FOLDER')
 
 
 class Bridge(SMTPServer):
@@ -32,7 +37,10 @@ class Bridge(SMTPServer):
         """
         try:
             mail = mailparser.parse_from_bytes(body)
-            self.forward(mail)
+            if DUMP_FOLDER is not None:
+                self.dump(mail)
+            if API_KEY is not None:
+                self.forward(mail)
         except Exception as e:
             return '554 Transaction failed: %s' % e
 
@@ -57,6 +65,45 @@ class Bridge(SMTPServer):
             return
 
         raise RuntimeError(self.get_error_message(response.text))
+
+    def dump(self, mail):
+        data = {
+            'from': None,
+            'to': [],
+            'subject': None,
+            'text_body': None,
+            'html_body': None,
+            'files': [],
+        }
+
+        data['from'] = {
+            'name': mail.from_[0][0],
+            'address': mail.from_[0][1],
+        }
+
+        for recipient in mail.to:
+            data['to'].append({
+                'name': recipient[0],
+                'address': recipient[1],
+            })
+
+        data['subject'] = mail.subject
+        data['text_body'] = mail.text_plain[0] if mail.text_plain else None
+        data['html_body'] = mail.text_html[0] if mail.text_html else None
+
+        if mail.attachments:
+            for att in mail.attachments:
+                data['files'].append({
+                    'name': att['filename'],
+                    'type': att['mail_content_type'],
+                    'body': base64.b64encode(att['payload'].encode()).decode('utf-8'),
+                })
+
+        tmp = tempfile.mkstemp(suffix='.json', prefix='mail_', dir=DUMP_FOLDER)
+        with os.fdopen(tmp[0], 'w') as f:
+            f.write(json.dumps(data))
+
+        print(json.dumps(data))
 
     def get_error_message(self, xml):
         m = re.search(r'<Message>(.+?)</Message>', xml)
@@ -146,6 +193,16 @@ class XML(object):
 
 bridge = Bridge(('0.0.0.0', 1025), None)
 print('Waiting for messages on *:1025')
-print('EXPERTSENDER_API_KEY = %s' % API_KEY)
-print('EXPERTSENDER_API_URL = %s' % API_URL)
+
+if API_KEY is not None:
+    print('Using expertsender API key %s' % API_KEY)
+    print('API base url is %s' % API_URL)
+
+if DUMP_FOLDER is not None:
+    print('Dumping messages to folder %s' % DUMP_FOLDER)
+
+if API_KEY is None and DUMP_FOLDER is None:
+    print('Please set either EXPERTSENDER_API_KEY or EXPERTSENDER_DUMP_FOLDER envar.', file=sys.stderr)
+    exit(1)
+
 asyncore.loop()

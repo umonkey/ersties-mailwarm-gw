@@ -3,47 +3,55 @@
 Reads incoming messages using SMTP, translates to the REST API.
 
 
+## Installation
+
+```
+# cd /opt
+# git clone git@github.com:umonkey/ersties-mailwarm-gw.git
+# pip install --no-cache-dir mail-parser requests
+```
+
+
+## Running
+
+Direct forwarding:
+
+```
+# cd /opt/ersties-mailwarm-gw
+# EXPERTSENDER_API_KEY='foobar' python3 src/server.py
+...
+Waiting for messages on *:1025
+```
+
+Dump files to a folder:
+
+```
+# mkdir -p /var/mailwarm-gw
+# cd /opt/ersties-mailwarm-gw
+# EXPERTSENDER_DUMP_FOLDER=/var/mailwarm-gw python3 src/server.py
+...
+Waiting for messages on *:1025
+```
+
+Using docker:
+
+```
+# mkdir -p /var/mailwarm-gw
+# cd /opt/ersties-mailwarm-gw
+# docker build --tag mailwarm-bridge:v1 .
+# docker run --rm -p 1025:1025/tcp --name mailwarm-bridge --env EXPERTSENDER_DUMP_FOLDER=/var/mailwarm-gw --env EXPERTSENDER_API_KEY='foobar' mailwarm-bridge:v1
+...
+Waiting for messages on *:1025
+```
+
+
 ## Configuration
 
 Environment variables:
 
 - `EXPERTSENDER_API_KEY` -- secret key.
 - `EXPERTSENDER_API_URL` -- URL to post to.
-
-Store in `/etc/ersties/mailwarm-bridge.env`:
-
-```
-$ cat /etc/ersties/mailwarm-bridge.env
-EXPERTSENDER_API_KEY=foobar
-EXPERTSENDER_API_URL=https://api3.esv2.com/v2/Api/SystemTransactionals/6
-```
-
-## Running
-
-(0) Prepare the image:
-
-```
-$ git clone https://github.com/umonkey/ersties-mailwarm-gw
-$ cd ersties-mailwarm-gw
-$ docker build --tag mailwarm-bridge:v1 .
-```
-
-(1) Run with docker run:
-
-```
-$ docker run --rm -p 1025:1025/tcp --name mailwarm-bridge --env-file /etc/ersties/mailwarm-bridge.env mailwarm-bridge:v1
-...
-Waiting for messages on *:1025
-```
-
-(2) Or, run with docker composer:
-
-```
-$ docker compose up
-Recreating ersties-mailwarm-gw_bridge_1 ... done
-Attaching to ersties-mailwarm-gw_bridge_1
-bridge_1  | Waiting for messages on *:1025
-```
+- `EXPERTSENDER_DUMP_FOLDER` -- where to put JSON files with messages.
 
 
 ## Testing
