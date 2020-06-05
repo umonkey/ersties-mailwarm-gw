@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # vim: set fileencoding=utf-8 tw=0:
 
+from __future__ import print_function
+
 import asyncore
 import base64
 import json

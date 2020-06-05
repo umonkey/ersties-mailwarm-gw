@@ -33,13 +33,10 @@ Dump files to a folder:
 Waiting for messages on *:1025
 ```
 
-Using docker:
+Using [the docker image](https://hub.docker.com/repository/docker/ersties/mailwarm-bridge):
 
 ```
-# mkdir -p /var/mailwarm-gw
-# cd /opt/ersties-mailwarm-gw
-# docker build --tag mailwarm-bridge:v1 .
-# docker run --rm -p 1025:1025/tcp --name mailwarm-bridge --env EXPERTSENDER_DUMP_FOLDER=/var/mailwarm-gw --env EXPERTSENDER_API_KEY='foobar' mailwarm-bridge:v1
+# docker run --rm -p 1025:1025/tcp --name mailwarm-bridge --env EXPERTSENDER_DUMP_FOLDER=/var/mailwarm-gw --env EXPERTSENDER_API_KEY='foobar' ersties/mailwarm-bridge
 ...
 Waiting for messages on *:1025
 ```
