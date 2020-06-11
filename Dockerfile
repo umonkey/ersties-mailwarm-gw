@@ -4,5 +4,7 @@ RUN pip install --no-cache-dir mail-parser requests
 RUN mkdir -p /var/www/modules/Mailwarm /var/www/cache/mailwarm
 WORKDIR /var/www
 COPY src/server.py modules/Mailwarm/server.py
-CMD ["/usr/local/bin/python", "-u", "/var/www/modules/Mailwarm/server.py"]
+COPY service.conf /etc/supervisor/conf.d/server.conf
+COPY runner.sh /opt/runner.sh
+CMD ["/opt/runner.sh"]
 EXPOSE 1025/tcp

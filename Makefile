@@ -13,11 +13,7 @@ release: build
 	docker push $(REPO):$(TAG)
 
 run: build
-	docker run --rm -p 1025:1025/tcp --name $(NAME) --env-file /etc/ersties/mailwarm-bridge.env $(REPO):$(TAG)
-
-run-noapi: build
-	mkdir -p var
-	docker run --rm -p 1025:1025/tcp --name $(NAME) --mount type=bind,source=`pwd`/var,target=/var/bridge --env EXPERTSENDER_DUMP_FOLDER=/var/bridge $(REPO):$(TAG)
+	docker run --rm -p 1025:1025/tcp --name $(NAME) $(REPO):$(TAG)
 
 run-local:
 	EXPERTSENDER_DUMP_FOLDER=`pwd`/var python3 src/server.py

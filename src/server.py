@@ -39,6 +39,9 @@ class Bridge(SMTPServer):
         """
         try:
             mail = mailparser.parse_from_bytes(body)
+            if mail['subject'] == 'mailwarm bridge restart':
+                exit(0)
+
             if DUMP_FOLDER:
                 self.dump(mail)
             if API_KEY is not None:
