@@ -2,12 +2,15 @@ NAME=mailwarm-bridge
 TAG=latest
 REPO=ersties/$(NAME)
 
+all:
+	@echo "make build    -- prepare the image"
+	@echo "make run      -- run the image"
+	@echo "make shell    -- open bash in the running image"
+	@echo "make release  -- publish image on docker hub"
+
 build:
 	docker build --tag $(REPO):$(TAG) .
 	docker images
-
-compose:
-	docker-compose up
 
 release: build
 	docker push $(REPO):$(TAG)
