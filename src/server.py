@@ -20,7 +20,7 @@ API_KEY = os.getenv('EXPERTSENDER_API_KEY')
 
 API_URL = os.getenv('EXPERTSENDER_API_URL', 'https://api3.esv2.com/v2/Api/SystemTransactionals/6')
 
-DUMP_FOLDER = os.getenv('EXPERTSENDER_DUMP_FOLDER')
+DUMP_FOLDER = os.getenv('EXPERTSENDER_DUMP_FOLDER', '/var/www/cache/mailwarm')
 
 
 class Bridge(SMTPServer):
@@ -39,7 +39,7 @@ class Bridge(SMTPServer):
         """
         try:
             mail = mailparser.parse_from_bytes(body)
-            if DUMP_FOLDER is not None:
+            if DUMP_FOLDER:
                 self.dump(mail)
             if API_KEY is not None:
                 self.forward(mail)

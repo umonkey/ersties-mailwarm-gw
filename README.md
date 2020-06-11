@@ -3,6 +3,14 @@
 Reads incoming messages using SMTP, translates to the REST API.
 
 
+## Running
+
+Preferred way:
+
+```
+$ docker run --rm -p 1025:1025/tcp --name mailwarm-bridge -v /var/www/mailwarm-bridge:/var/bridge ersties/mailwarm-bridge
+```
+
 ## Installation
 
 ```
