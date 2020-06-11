@@ -5,7 +5,7 @@ Reads incoming messages using SMTP, translates to the REST API.
 
 ## Running
 
-Preferred way:
+The preferred way is to user docker, with the [pre-built image](https://hub.docker.com/repository/docker/ersties/mailwarm-bridge):
 
 ```
 $ docker run --rm -p 1025:1025/tcp --name mailwarm-bridge -v /var/www/ersties.com/live:/var/www ersties/mailwarm-bridge
